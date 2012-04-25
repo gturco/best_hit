@@ -1,7 +1,7 @@
 from bed_utils import BlastLine,Bed
 from  itertools import product
 from collections import defaultdict
-
+from best_hit import blast_grouped
 
 
 def get_same_seqid(left_ortho,right_ortho,hits,sbed):
@@ -111,28 +111,6 @@ def main(qbed_file,sbed_file,blast_file,pairs_file,out_fh,padding,query=True):
     write_best_hits(out_fh,best_hits)
     return best_hits
 
-
-def group_hits(s):
-    """groups values to same key in a list"""
-    d = defaultdict(list)
-    for k, v in s:
-        d[k].append(v)
-    return d
-
-def blast_grouped(blast_file,query):
-    """groups all hits to key sorts by largest hit and returns best hit and
-    score """
-    fp = file(blast_file)
-    #blast = BlastLine(blast_file)
-    blasts = sorted([BlastLine(line) for line in fp], \
-                        key=lambda b: b.score, reverse=True)
-    if query: blast_list = [(b.query, (b.score,b.subject)) for b in blasts if b.evalue < 1e-10]
-    else: blast_list = [(b.subject, (b.score,b.query)) for b in blasts if b.evalue < 1e-10]
-    
-    blast_grouped = group_hits(blast_list)
-    #blast_grouped = itertools.groupby(blast_list, key=lambda x:x[0])
-    #best_hits = dict((k,max(blast_grouped[k])) for k in blast_grouped)
-    return blast_grouped
 
 main("/Users/gt/data/paper4/rice_j.bed","/Users/gt/data/paper4/setaria_n.bed","/Users/gt/data/paper4/rice_j_setaria_n/rice_j_setaria_n.blast","/Users/gt/data/paper4/rice_j_setaria_n/rice_j_setaria_n.pairs.txt","/Users/gt/data/paper4/rice_j_setaria_n/rice_j_setaria_n.pairs.30000",30000)
 #best_hits = best_hit("/Users/gt/dick_m_tair_10.blast")
